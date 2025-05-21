@@ -6,27 +6,34 @@
     # Adding user ...
 
     if(isset($_POST['add-user'])) {
-        $username = $_POST['username'];
-        $password = substr($username, 0, 3).rand(0001 , 9999);
+        $fname = $_POST['fname'];
+        $lname = $_POST['lname'];
+        $email = $_POST['email'];
+        $username = $fname.rand(001 , 999);
+        $userid = substr($fname, 0, 3).rand(0001 , 9999);
+        $password = $fname.'123';
+        $hashed_password = md5($password);
+        $role = $_POST['role'];
+        $phone = $_POST['phone'];
 
+        $sql_insert_user = "INSERT INTO `user` (`userid`, `fname`, `lname`, `username`, `email`, `phone`, `password`, `role`)
+                VALUES (:userid, :fname, :lname, :username, :email, :phone, :password, :role)";
 
-        $sql_insert_user = "INSERT INTO `users` (`username`, `password`)
-                VALUES (:username, :password)";
+        $insert_user_prep = $pdo->prepare($sql_insert_user);
+        $insert_user_prep->execute([
+                ":userid" => $userid,
+                ":fname" => $fname,
+                ":lname" => $lname,
+                ":username" => $username,
+                ":email" => $email,
+                ":phone" => $phone,
+                ":password" => $password,
+                ":role" => $role
+        ]);
 
-        $insert_service_prep = $pdo->prepare($sql_insert_service);
-            $insert_service_prep->execute([
-                ":service_code" => $service_code,
-                ":service_name" => $service_name,
-                ":service_description" => $service_description,
-                ":service_type" => $service_type,
-                ":service_amount" => $service_amount,
-                ":service_currency" => $service_currency,
-                ":duration" => $service_duration
-            ]);
-
-            if ($sql_insert_service) {
-                header('Location: service.php');
-            }
+        if ($sql_insert_user) {
+                header('Location: user.php');
+        }
     }
 
     # Loading user html ...
